@@ -34,10 +34,12 @@ This should display the different arguments.
 
 ## Usage
 
+By default, `panelmapper` assumes data were collected on a [Rayonix MX340-HS](https://biocars.uchicago.edu/facilities/experimental-station-equipment/) with binning set to 2x2.
+
 ```bash
-map-refl-to-panel \
---x_det 3840 \ # number of pixels in horizontal axis
---y_det 3840 \ # number of pixels in vertical axis
---x_panel 16 \ # nuber of panels along horizontal axis
---y_panel 16 \ # number of panels along vertical axis
+map-refl-to-panel tests/data/subset.refl \
+--x-det=3840 \
+--y-det=3840 \
+--x-panel=16 \
+--y-panel=16 \
 ```
