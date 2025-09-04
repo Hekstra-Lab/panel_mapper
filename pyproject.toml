@@ -1,0 +1,17 @@
+[project]
+name = "panel-mapper"
+version = "0.1.0"
+description = "Map reflections (MTZ/REFFILE) to nearest detector panels"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "reciprocalspaceship>=1.0.6",
+]
+
+[project.scripts]
+map-refl-to-panel = "main:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
