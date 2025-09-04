@@ -11,7 +11,7 @@ To use the panel mapper,
 git clone https://github.com/Hekstra-Lab/panel_mapper.git
 
 # go to the repo 
-cd panel-mapper
+cd panel_mapper
 
 # create a conda environment 
 conda env create -f env.yaml
