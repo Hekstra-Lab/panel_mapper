@@ -1,9 +1,0 @@
-README.md
-main.py
-pyproject.toml
-panel_mapper.egg-info/PKG-INFO
-panel_mapper.egg-info/SOURCES.txt
-panel_mapper.egg-info/dependency_links.txt
-panel_mapper.egg-info/entry_points.txt
-panel_mapper.egg-info/requires.txt
-panel_mapper.egg-info/top_level.txt
