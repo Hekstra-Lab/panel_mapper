@@ -131,7 +131,7 @@ def map_refl_to_panel(
         y_panel = int((y_det - y_interpanel * y_gaps) / y_panel)
 
     # dimensions of each panel
-    panel_dim = (x_panel, y_panel)  # kept for reference; not used later
+    panel_dim = (x_panel, y_panel)
 
     # get centroids of each panel
     panel_centroids = _get_panel_centroids(
@@ -233,7 +233,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--refl",
         type=str,
         default=None,
-        help="Path to integrated.refl (optional; kept for parity)",
+        help="Path to integrated.refl",
     )
     p.add_argument(
         "--out-refl",
