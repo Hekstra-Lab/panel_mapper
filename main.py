@@ -20,6 +20,7 @@ def map_refl_to_panel(
     show_plot: bool = False,
     save_plot: bool = False,
     plot_filename: str = "panel_centroids.png",
+    plot_panels: bool = False,
 ) -> None:
     from itertools import product
 
@@ -62,6 +63,30 @@ def map_refl_to_panel(
             plt.show()
 
         return plt.gcf()
+
+    def _plot_panels(
+        panel_ids,
+        x,
+        y,
+    ):
+        from matplotlib.colors import ListedColormap
+
+        idx = np.arange(len(x))
+        np.random.shuffle(idx)
+        idx = idx[:10_000]  # or 1_000 like you did
+        x, y, panel_ids = np.asarray(x)[idx], np.asarray(y)[idx], panel_ids[idx]
+
+        base = plt.get_cmap("tab20").colors
+        k = int(panel_ids.max()) + 1
+        colors = (base * ((k + len(base) - 1) // len(base)))[:k]
+        cmap = ListedColormap(colors)
+
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.scatter(x, -y, c=panel_ids, s=5, alpha=0.8, cmap=cmap)
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_xlabel("x (px)")
+        ax.set_ylabel("y (px)")
+        plt.show()
 
     def _get_xy_array_mtz(mtz: str) -> tuple[DataSet, np.ndarray] | None:
         df = rs.read_mtz(mtz)
@@ -158,6 +183,11 @@ def map_refl_to_panel(
     dist_panel, panel_id = map_to_centroids(
         panel_centroids=panel_centroids, xy_array=xy_array
     )
+
+    if plot_panels:
+        x = xy_array[:, 0]
+        y = xy_array[:, 1]
+        _plot_panels(panel_ids=panel_id, x=x, y=y)
 
     if plot_centroids:
         # plotting the centroids
@@ -262,6 +292,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Name of the output .mtz file (default: unmerged_panel_ids.mtz)",
     )
     # Plotting
+    p.add_argument(
+        "--plot-panels",
+        action="store_true",
+        help="Set this option to plot panels",
+    )
     p.add_argument(
         "--plot-centroids",
         action="store_true",
