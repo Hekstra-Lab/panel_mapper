@@ -7,8 +7,8 @@ def map_refl_to_panel(
     data: str,
     x_det: int = 3840,
     y_det: int = 3840,
-    x_panel: int = 16,
-    y_panel: int = 16,
+    x_panel: int = 5,
+    y_panel: int = 12,
     x_subpanel: int = 0,
     y_subpanel: int = 0,
     x_interpanel: int | None = 0,
@@ -63,9 +63,17 @@ def map_refl_to_panel(
 
         return plt.gcf()
 
-    def _get_xy_array_mtz(mtz: str) -> tuple[DataSet, np.ndarray]:
+    def _get_xy_array_mtz(mtz: str) -> tuple[DataSet, np.ndarray] | None:
         df = rs.read_mtz(mtz)
-        return df, df[["XDET", "YDET"]].to_numpy()
+
+        if "XDET" and "YDET" in df.columns:
+            coords = df[["XDET", "YDET"]].to_numpy()
+            return df, coords
+        elif "xcal" and "ycal" in df.columns:
+            coords = df[["xcal", "ycal"]].to_numpy()
+            return df, coords
+        else:
+            print("Unknown coordinate keys in .mtz")
 
     def map_to_centroids(panel_centroids: np.ndarray, xy_array: np.ndarray):
         kdtree = KDTree(data=panel_centroids)
@@ -73,6 +81,7 @@ def map_refl_to_panel(
         return query
 
     def _get_xy_array_refl(refl_path: str):
+        """function to get x,y coordinates from a reflection file"""
         # read reflection table
         tbl = flex.reflection_table.from_file(refl_path)
         # predicted centroids
@@ -87,11 +96,16 @@ def map_refl_to_panel(
             raise ValueError("Invalid coordinate dimensions. `arr` must be 2D or 3D")
 
     def _get_panel_centroids(
-        npix_sm_x: int,
-        npix_sm_y: int,
+        npix_sm_x: float,
+        npix_sm_y: float,
         npix_inter_x: int,
         npix_inter_y: int,
+        npanels_x,
+        npanels_y,
     ) -> np.ndarray:
+        """
+        Assigns centroids to each detector panel.
+        """
         panel_centroids = np.array(
             list(
                 product(
@@ -125,20 +139,20 @@ def map_refl_to_panel(
     y_interpanel = 0 if y_interpanel is None else y_interpanel
 
     # number of pixels per panel in x and y
-    if x_panel is not None:
-        x_panel = int((x_det - x_interpanel * x_gaps) / x_panel)
-    if y_panel is not None:
-        y_panel = int((y_det - y_interpanel * y_gaps) / y_panel)
+    n_pix_x = x_det / x_panel
+    n_pix_y = x_det / x_panel
 
     # dimensions of each panel
     panel_dim = (x_panel, y_panel)
 
     # get centroids of each panel
     panel_centroids = _get_panel_centroids(
-        npix_sm_x=x_panel,
-        npix_sm_y=y_panel,
+        npix_sm_x=n_pix_x,
+        npix_sm_y=n_pix_y,
         npix_inter_x=x_interpanel,
         npix_inter_y=y_interpanel,
+        npanels_x=n_pix_x,
+        npanels_y=n_pix_y,
     )
 
     dist_panel, panel_id = map_to_centroids(
